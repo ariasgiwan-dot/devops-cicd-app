@@ -1,4 +1,4 @@
-Jenkinsfilepipeline {
+pipeline {
     agent any
 
     stages {
@@ -8,21 +8,25 @@ Jenkinsfilepipeline {
             }
         }
 
-stage('Python Tests') {
-    steps {
-        sh '''
-            python3 -m venv .venv
-            .venv/bin/python -m pip install --upgrade pip
-            .venv/bin/python -m pip install -r app/requirements.txt
-            cd app
-            ../.venv/bin/python -m unittest discover -s . -p "test_*.py"
-        '''
-    }
-}
+        stage('Python Tests') {
+            steps {
+                sh '''
+                    python3 -m venv .venv
+                    .venv/bin/python -m pip install --upgrade pip
+                    .venv/bin/python -m pip install -r app/requirements.txt
+                    cd app
+                    ../.venv/bin/python -m unittest discover -s . -p "test_*.py"
+                '''
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'
+                    script {
+                        def scannerHome = tool 'SonarScanner'
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
