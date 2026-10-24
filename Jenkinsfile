@@ -1,4 +1,4 @@
-pipeline {
+Jenkinsfilepipeline {
     agent any
 
     stages {
@@ -8,17 +8,17 @@ pipeline {
             }
         }
 
-        stage('Python Tests') {
-            steps {
-                sh '''
-                    python3 --version
-                    cd app
-                    python3 -m pip install -r requirements.txt
-                    python3 -m unittest discover -s . -p "test_*.py"
-                '''
-            }
-        }
-
+stage('Python Tests') {
+    steps {
+        sh '''
+            python3 -m venv .venv
+            .venv/bin/python -m pip install --upgrade pip
+            .venv/bin/python -m pip install -r app/requirements.txt
+            cd app
+            ../.venv/bin/python -m unittest discover -s . -p "test_*.py"
+        '''
+    }
+}
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
